@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+// var fs = require('fs'),
+//     gm = require('gm').subClass({imageMagick:true});
 
 //引入数据库配置文件
 var setting = require('./setting');
@@ -30,7 +32,6 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));//打印日志
 //数据转化为json格式
 app.use(bodyParser.json());
-//
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -48,7 +49,7 @@ app.use(session({
     store:new Mongostore({
         url:'mongodb://localhost/blog'
     }),
-    //是否强制保存回话
+    //是否强制保存会话
     resave:false,
     //会话未修改的时候，是否保存
     saveUninitialized:true

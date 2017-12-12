@@ -1,7 +1,19 @@
 <% include header %>
 
-
-
+<% docs.forEach(function(doc){ %>
+    <p><h2><a href="#"><%= doc.title %></a></h2></p>
+    <p class="info">
+        作者: <a href="#"><%= doc.name %></a>
+        日期: <%= doc.time %>
+    </p>
+    <p>
+        <!--
+            =输出字符串
+            -以HTML格式输出
+        -->
+        <%- doc.content %>
+    </p>
+<% })  %>
 
 <% include footer %>
 

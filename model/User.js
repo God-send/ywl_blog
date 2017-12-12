@@ -10,7 +10,8 @@ function User(user){
     this.password = user.password;
     this.email = user.email;
 }
-module.exports = User;
+
+module.exports = User;//模块接口
 
 User.prototype.save = function (callback) {
     //收集即将存入数据库的
@@ -19,6 +20,7 @@ User.prototype.save = function (callback) {
         password : this.password,
         email : this.email
     }
+
     mongodb.open(function(err,db){
         //如果打开数据库的时候发生错误,将错误结果返回给回调
         if(err){
@@ -36,7 +38,7 @@ User.prototype.save = function (callback) {
                 if(err){
                     return callback(err);
                 }
-                callback(null,user[0]);
+                callback(null,user);//User是一个注册成功后的返回对象，里面包含了查询的相关信息。
             })
         })
     })
@@ -53,7 +55,7 @@ User.get = function(username,callback){
                 return callback(err);
             }
             //查询出name为指定用户名的用户信息,将结果返回
-            collection.findOne({username:usernamename},function(err,user){
+            collection.findOne({username:username},function(err,user){
                 // mongodb.close();
                 if(err){
                     return callback(err);
