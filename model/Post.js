@@ -68,6 +68,7 @@ Post.getAll = function (name,callback) {
                     return callback(err);
                 }
                 //将每篇文章在读取的时候以markdown的格式进行解析
+                //通过markdown解析可以化解XSS攻击
                 docs.forEach(function(doc){
                     doc.content = markdown.toHTML(doc.content);
                 })
@@ -102,6 +103,84 @@ Post.getOne = function(name,title,time,callback){
         })
     })
 }
-
+//编辑
+Post.edit = function(name,title,time,callback){
+    mongodb.open(function(err,db){
+        if(err){
+            return callback(err);
+        }
+        db.collection('posts',function (err,collection) {
+            if(err){
+                mongodb.close();
+                return callback(err);
+            }
+            collection.findOne({
+                "name" : name,
+                "title" : title,
+                "time" : time
+            }, function(err,doc){
+                mongodb.close();
+                if(err){
+                    return callback(err);
+                }
+                return callback(null,doc);
+            })
+        })
+    })
+}
+//保存修改内容
+Post.update = function(name,title,time,content,callback){
+    mongodb.open(function(err,db){
+        if(err){
+            return callback(err);
+        }
+        db.collection('posts',function(err,collection){
+            if(err){
+                mongodb.close();
+                return callback(err);
+            }
+            collection.update({
+                name:name,
+                title:title,
+                time:time
+            },{
+                $set:{content:content}
+            },function(err,doc){
+                mongodb.close();
+                if(err){
+                    return callback(err);
+                }
+                return callback(null,doc)
+            })
+        })
+    })
+}
+//删除
+Post.remove = function(name,title,time,callback){
+    mongodb.open(function(err,db){
+        if(err){
+            return callback(err);
+        }
+        db.collection('posts',function(err,collection){
+            if(err){
+                mongodb.close();
+                return callback(err);
+            }
+            collection.remove({
+                name:name,
+                title:title,
+                time:time
+            },{
+                w:1
+            },function(err){
+                mongodb.close();
+                if(err){
+                    return callback(err);
+                }
+                return callback(err);
+            })
+        })
+    })
+}
 
 module.exports = Post;
