@@ -23,7 +23,9 @@ Post.prototype.save = function(callback){
         name : this.name,
         title : this.title,
         content : this.content,
-        time : now
+        time : now,
+        //添加留言的字段
+        comments:[]
     }
     //3.打开数据库
     //4.读取posts集合
@@ -77,7 +79,7 @@ Post.getAll = function (name,callback) {
         })
     })
 }
-//获取一片文章
+//获取一篇文章
 Post.getOne = function(name,title,time,callback){
     mongodb.open(function(err,db){
         if(err){
@@ -97,7 +99,14 @@ Post.getOne = function(name,title,time,callback){
                 if(err){
                     return callback(err);
                 }
-                doc.content = markdown.toHTML(doc.content);
+                if(doc){
+                    //markdown 解析文章内容
+                    doc.content = markdown.toHTML(doc.content);
+                    //留言的内容也要通过markdown来解析
+                    doc.comments.forEach(function(comment){
+                        comment.c_content = markdown.toHTML(comment.c_content)
+                    })
+                }
                 return callback(null,doc);
             })
         })

@@ -1,6 +1,7 @@
 //引入Users集合操作方法
 var User = require('../model/User');
 var Post = require('../model/Post');
+var Comment = require('../model/Comment');
 var mongodb = require('../model/db')
 
 //引入一个加密的插件
@@ -25,6 +26,10 @@ function checkLogin(req,res,next){
         return res.redirect('/login');
     }
     next();
+}
+//时间整理
+function formatDate(num) {
+    return num<10? '0'+num : num;
 }
 //已登录情况下,不允许访问登录和注册
 function checkNotLogin(req,res,next){
@@ -53,6 +58,7 @@ module.exports = function(app){
             })
         })
     })
+    //注册页面
     app.get('/reg',checkNotLogin,function(req,res){
         res.render('reg',{
             title:'注册页面',
@@ -104,7 +110,6 @@ module.exports = function(app){
             })
         })
     })
-
     //登录页面
     app.get('/login',checkNotLogin,function(req,res){
         res.render('login',{
@@ -263,6 +268,26 @@ module.exports = function(app){
             }
             req.flash('success','删除成功');
             return res.redirect('/');
+        })
+    })
+    //添加留言
+    app.post('/comment/:name/:title/:time',function(req,res){
+        var date = new Date();
+        var now = date.getFullYear() + '-' + formatDate(date.getMonth() + 1) + '-' + formatDate(date.getDate()) +' '+formatDate(date.getHours()) +':'+formatDate(date.getMinutes())+':'+formatDate(date.getSeconds());
+        var comment = {
+            c_name:req.session.user.username,
+            c_time:now,
+            c_content:req.body.c_content
+        }
+        var newComment = new Comment(req.params.name,req.params.title,req.params.time,comment);
+        newComment.save(function(err){
+            if(err){
+                console.log('如果错误的话输出'+err);
+                req.flash('error',err);
+                return res.redirect('/');
+            }
+            req.flash('success','留言成功');
+            return res.redirect('back');
         })
     })
 }
